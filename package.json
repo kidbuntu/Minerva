@@ -1,0 +1,17 @@
+{
+  "name": "minerva",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cashmngmt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "harry inoferio ii",
+  "license": "ISC",
+  "dependencies": {
+    "hapi": "^17.5.2",
+    "inert": "^5.1.0",
+    "mysql": "^2.16.0",
+    "nodemon": "^1.18.3"
+  }
+}
