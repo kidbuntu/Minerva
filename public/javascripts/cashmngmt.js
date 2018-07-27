@@ -1,5 +1,5 @@
 $(function(){
-
+	// SKELETAL DATA
 	var data = {"total":7,"rows":[
 			{"denominations":1000, "quantity":0, "subtotal":0, },
 			{"denominations":500, "quantity":0, "subtotal":0, },
@@ -11,8 +11,6 @@ $(function(){
 				],"footer":[
 				{"denominations":"Total","subtotal":0.00},
 		]};
-	
-
 	var lastIndex;
 
 	// MERGE
@@ -36,7 +34,7 @@ $(function(){
                 });
             }
 	}
-
+// DATAGRID
 	$('#dg').datagrid({
 		editorHeight:50,
 		rowStyler:function(){
@@ -72,26 +70,20 @@ $(function(){
 		singleSelect:true,
 		data: data,
 		showFooter:true,
-		toolbar:[
-		{
+		toolbar:[{
 			iconCls:'icon-save',
 			text:'Commit',
+			id:'btnacommit',
+			handler:function(){
+				dlg.dialog('open').dialog('center');
+			}	
+		},'-',{
+			iconCls:'icon-ok',
+			text:'Accept',
 			id:'btnaccept',
 			handler:function(){
 				$("#dg").datagrid('acceptChanges');
-				var rowfooter = $("#dg").datagrid('getFooterRows');
-
-				var data = $("#dg").datagrid('getData');
-				var total = 0;
-				$.each(data.rows, function( key, value ) {
-					total += parseFloat(value.subtotal);
-				});
-
-				console.log(total);
-
-				rowfooter[0]['subtotal'] = total;
-				$('#dg').datagrid('reloadFooter');
-				mergeCells();
+				$("#dg").datagrid('unselectAll');
 			}
 		},'-',{
 			iconCls:'icon-undo',
@@ -112,10 +104,19 @@ $(function(){
 			var editors = $('#dg').datagrid('getEditors', rowIndex);
 			var n1 = $(editors[0].target);
 			var n2 = $(editors[1].target);
+			var total = 0;
 			n1.numberbox({
 				onChange:function(newValue, oldValue){
 					var subtotal = newValue*row.denominations;
 					n2.numberbox('setValue',subtotal);
+				}
+			});
+			n2.numberbox({
+				onChange:function(newValue, oldValue){
+					var footer = $("#dg").datagrid('getFooterRows');
+					footer[0]['subtotal'] = (footer[0]['subtotal'] - parseFloat(oldValue)+parseFloat(newValue));
+					$('#dg').datagrid('reloadFooter');	
+					mergeCells();
 				}
 			});
 			if (rowIndex == 6) {
@@ -128,4 +129,29 @@ $(function(){
 		onLoadSuccess: mergeCells,
 		onAfterEdit: mergeCells
 	});
+// DATAGRID END
+// DIALOG
+	var dlg = $("#dlg").dialog({});
+	dlg.dialog({
+		title:'Batch Confirmation',
+		width: 400,
+		modal: true,
+		border: 'thin',
+		closed:true,
+		buttons:[{
+			iconCls:'icon-ok',
+			text:'OK',
+			handler: () => {
+				// dlg.dialog('close');
+			}
+		},{
+			iconCls:'icon-cancel',
+			text:'Cancel',
+			handler:() => {
+				dlg.dialog('close');
+			}
+		}]
+	});
+
+
 });
